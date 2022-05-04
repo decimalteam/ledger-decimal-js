@@ -1,0 +1,29 @@
+{
+    "coin/send_coin": {
+        "coin": {
+                "amount": "1000",
+                "denom": "del"
+            },
+            "receiver": "recipient",
+            "sender": "address"
+        },
+    "coin/multi_send_coin": {
+        "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w",
+        "sends": [
+            {   
+                "coin": {
+                    "amount": "2000000000000000000",
+                    "denom": "del"
+                },
+                "receiver": "dx14kskueht0ul2qme5qmwjvlmjr9thd0x3x9ffrw"
+            },
+            {   
+                "coin": {
+                    "amount": "1000000000000000000",
+                    "denom": "del"
+                },
+                "receiver": "dx1fjfxrtflz6cqa82520awnytkrr43tlnmcc5357"
+            }
+        ]
+    }
+}

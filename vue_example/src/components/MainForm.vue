@@ -25,7 +25,11 @@
 
     <div class="form">
       <div class="form-buttons-inline">
-        <button v-for="(txType, index) in txTypes" :key="'type_' + index">
+        <button
+          v-for="(txType, index) in Object.keys(txTypes)"
+          :key="'type_' + index"
+          @click="changeActiveTxType(txType)"
+        >
           {{ txType }}
         </button>
       </div>
@@ -46,58 +50,26 @@
 </template>
 
 <script>
+import txTypes from "@/assets/txTypes";
+
 export default {
   name: "MainForm",
   components: {},
   data() {
     return {
-      txTypes: [
-        "coin/buy_coin",
-        "coin/create_coin",
-        "coin/update_coin",
-        "coin/sell_coin",
-        "coin/send_coin",
-        "coin/multi_send_coin",
-        "coin/sell_all_coin",
-        "coin/redeem_check",
-        "coin/issue_check",
-        "validator/declare_candidate",
-        "validator/delegate",
-        "validator/set_online",
-        "validator/set_offline",
-        "validator/unbond",
-        "validator/delegate_nft",
-        "validator/unbond_nft",
-        "multisig/create_wallet",
-        "multisig/create_transaction",
-        "multisig/sign_transaction",
-        "cosmos-sdk/MsgSubmitProposal",
-        "cosmos-sdk/MsgVote",
-        "nft/msg_mint",
-        "nft/msg_burn",
-        "nft/msg_edit_metadata",
-        "nft/msg_transfer",
-        "swap/msg_initialize",
-        "swap/msg_redeem_v2",
-      ],
-      unsignedTx: {
-        msgs: {
-          type: "coin/send",
-          value: {
-            recipient: "asdasd",
-            coin: {
-              denom: "del",
-              amount: 1000000000,
-            },
-          },
-        },
-      },
+      unsignedTx: {},
+      txTypes,
     };
   },
-
   computed: {
     unsignedTxStringify: function () {
       return JSON.stringify(this.unsignedTx, undefined, 2);
+    },
+  },
+  methods: {
+    changeActiveTxType(txType) {
+      console.log(txTypes[txType]);
+      this.unsignedTx = JSON.parse(txTypes[txType]);
     },
   },
 };
