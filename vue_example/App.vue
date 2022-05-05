@@ -12,17 +12,17 @@
 </template>
 
 <script>
-import MainForm from "@/components/MainForm";
+import MainForm from "./components/MainForm";
 
 export default {
   name: "App",
   components: {
-    MainForm,
-  },
+    MainForm
+  }
 };
 </script>
 
-<style lang="scss">
+<style>
 body {
   background-color: #212429;
 }
@@ -41,11 +41,11 @@ body {
 .content {
   margin-left: auto;
   margin-right: auto;
+}
 
-  &__logo {
-    text-align: center;
-    padding: 15px 0;
-  }
+.content__logo {
+  text-align: center;
+  padding: 15px 0;
 }
 
 .flex {
