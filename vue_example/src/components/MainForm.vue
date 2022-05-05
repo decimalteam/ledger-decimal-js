@@ -16,9 +16,27 @@
       <div class="form-texts">
         <div class="form-texts__title">Select chain enviroment</div>
         <div class="form-buttons-row space-between">
-          <button class="btn btn-active">Devnet</button>
-          <button class="btn">Testnet</button>
-          <button class="btn">Mainnet</button>
+          <button
+            class="btn"
+            v-bind:class="{ 'btn-active': activeDecimalUrl === 'Devnet' }"
+            @click="decimalConstructor(restUrlArray[0], 'Devnet')"
+          >
+            Devnet
+          </button>
+          <button
+            class="btn"
+            v-bind:class="{ 'btn-active': activeDecimalUrl === 'Testnet' }"
+            @click="decimalConstructor(restUrlArray[0], 'Testnet')"
+          >
+            Testnet
+          </button>
+          <button
+            class="btn"
+            v-bind:class="{ 'btn-active': activeDecimalUrl === 'Mainnet' }"
+            @click="decimalConstructor(restUrlArray[0], 'Mainnet')"
+          >
+            Mainnet
+          </button>
         </div>
       </div>
     </div>
@@ -28,6 +46,8 @@
         <button
           v-for="(txType, index) in Object.keys(txTypes)"
           :key="'type_' + index"
+          class="btn-inline"
+          :class="{ 'btn-active': activeTxType === txType }"
           @click="changeActiveTxType(txType)"
         >
           {{ txType }}
@@ -51,6 +71,7 @@
 
 <script>
 import txTypes from "@/assets/txTypes";
+import { Decimal } from "decimal-js-sdk";
 
 export default {
   name: "MainForm",
@@ -59,6 +80,14 @@ export default {
     return {
       unsignedTx: {},
       txTypes,
+      decimal: null,
+      activeDecimalUrl: "Devnet",
+      activeTxType: null,
+      restUrlArray: [
+        "https://devnet-gate.decimalchain.com/api/rpc/",
+        "https://testnet-gate.decimalchain.com/api/rpc/",
+        "https://mainnet-gate.decimalchain.com/api/rpc/",
+      ],
     };
   },
   computed: {
@@ -68,8 +97,15 @@ export default {
   },
   methods: {
     changeActiveTxType(txType) {
-      console.log(txTypes[txType]);
-      this.unsignedTx = JSON.parse(txTypes[txType]);
+      this.activeTxType = txType;
+      this.unsignedTx = JSON.parse(JSON.stringify(txTypes[txType]));
+    },
+    decimalConstructor(restURL, chain) {
+      const decimalOptions = {
+        restURL,
+      };
+      this.activeDecimalUrl = chain;
+      this.decimal = new Decimal(decimalOptions);
     },
   },
 };
@@ -136,15 +172,6 @@ export default {
     &-inline {
       display: flex;
       flex-wrap: wrap;
-
-      button {
-        color: #0bf;
-        border: 1px solid #0bf;
-        background: rgba(0, 187, 255, 0.03);
-        margin: 5px;
-        padding: 5px;
-        border-radius: 8px;
-      }
     }
   }
 }
@@ -164,6 +191,15 @@ export default {
   color: #0bf;
   border: 2px solid #0bf;
   background: rgba(0, 187, 255, 0.03);
+
+  &-inline {
+    color: #0bf;
+    border: 1px solid #0bf;
+    background: rgba(0, 187, 255, 0.03);
+    margin: 5px;
+    padding: 5px;
+    border-radius: 8px;
+  }
 
   &-active {
     color: #fff;
