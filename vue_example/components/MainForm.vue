@@ -32,14 +32,14 @@
           <button
             class="btn"
             :class="{ 'btn-active': activeDecimalUrlName === 'Testnet' }"
-            @click="decimalConstructor(restUrlArray[0], 'Testnet')"
+            @click="decimalConstructor(restUrlArray[1], 'Testnet')"
           >
             Testnet
           </button>
           <button
             class="btn"
             :class="{ 'btn-active': activeDecimalUrlName === 'Mainnet' }"
-            @click="decimalConstructor(restUrlArray[0], 'Mainnet')"
+            @click="decimalConstructor(restUrlArray[2], 'Mainnet')"
           >
             Mainnet
           </button>
@@ -63,7 +63,7 @@
       <div class="form-editor">
         <textarea id="unsignedTx" v-model="unsignedTxStringify" name="unsignedTx" rows="4"></textarea>
         <div class="form-submit">
-          <button class="btn btn-active">
+          <button class="btn btn-active" @click="txTransfer">
             Send
           </button>
         </div>
@@ -76,6 +76,10 @@
 import { Decimal } from "decimal-js-sdk";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import { bytesToBase64 } from "@tendermint/belt";
+import { createSignMsg } from "@tendermint/sig";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import secp256k1 from "secp256k1/elliptic";
 import DecimalApp from "../../src";
 import txTypes from "../assets/txTypes.json";
 
@@ -85,6 +89,7 @@ export default {
   data() {
     return {
       unsignedTx: {},
+      unsignedTxStringify: "{}",
       txTypes,
       decimal: null,
       decimalNanoApp: null,
@@ -104,22 +109,18 @@ export default {
       transport: null,
     };
   },
-  computed: {
-    unsignedTxStringify() {
-      return JSON.stringify(this.unsignedTx, undefined, 2);
-    },
-  },
   methods: {
     changeActiveTxType(txType) {
       this.activeTxType = txType;
       this.unsignedTx = JSON.parse(JSON.stringify(txTypes[txType]));
+      this.unsignedTxStringify = JSON.stringify(txTypes[txType], undefined, 2);
     },
     decimalConstructor(restURL, chain) {
-      this.activeDecimalUrlName = restURL;
+      this.activeDecimalUrl = restURL;
       const decimalOptions = {
         restURL,
       };
-      this.activeDecimalUrl = chain;
+      this.activeDecimalUrlName = chain;
       this.decimal = new Decimal(decimalOptions);
     },
     async request(url) {
@@ -132,9 +133,9 @@ export default {
     },
     async getChainInfo() {
       const accountInfo = await this.request(
-        `${this.activeDecimalUrlName}accounts/${this.wallet.bech32_address}`,
+        `${this.activeDecimalUrl}accounts/${this.wallet.bech32_address}`,
       );
-      const nodeInfo = await this.request(`${this.activeDecimalUrlName}node_info`);
+      const nodeInfo = await this.request(`${this.activeDecimalUrl}node_info`);
 
       return {
         account_number: accountInfo?.result?.value?.account_number ?? "0",
@@ -146,7 +147,37 @@ export default {
       this.transport = await TransportWebUSB.create();
       this.decimalNanoApp = new DecimalApp(this.transport);
       this.wallet = await this.decimalNanoApp.getAddressAndPubKey(this.path, "dx");
-      console.info({ wallet: this.wallet });
+    },
+    async txTransfer() {
+      console.log(this.unsignedTxStringify);
+      const unsignTx = await this.decimal.prepareTx(this.activeTxType, JSON.parse(this.unsignedTxStringify));
+      const publicKey = (await this.decimalNanoApp.publicKey(this.path)).compressed_pk;
+
+      const signatures = {
+        signature: "",
+        pub_key: {
+          type: "tendermint/PubKeySecp256k1",
+          value: bytesToBase64(publicKey),
+        },
+      };
+
+      const message = JSON.stringify(createSignMsg(unsignTx, await this.getChainInfo()));
+
+      console.log(message);
+
+      const signature = await this.decimalNanoApp.sign(this.path, message);
+
+      console.log(this.getChainInfo());
+
+      const tx = JSON.parse(message);
+      tx.msg = tx.msgs;
+      tx.msgs = undefined;
+
+      signatures.signature = bytesToBase64(secp256k1.signatureImport(signature.signature));
+      tx.signatures = [signatures];
+
+      const result = await this.decimal.postTx({ mode: "sync", tx }, { sendTxDirectly: true });
+      console.log(result);
     },
   },
 };
