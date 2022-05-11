@@ -54,6 +54,25 @@
         },
         "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w"
     },
+    "coin/buy_coin":  {
+        "coin_to_buy": {
+          "amount": "1000000000000000000",
+          "denom": "del"
+        },
+        "max_coin_to_sell": {
+          "amount": "1000000000000000000",
+          "denom": "del"
+        },
+        "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w"
+    },
+    "validator/delegate": {
+        "amount": {
+          "amount": "1000000000000000000000000",
+          "denom": "del"
+        },
+        "delegator_address": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w",
+        "validator_address": "dxvaloper1lx4lvt8sjuxj8vw5dcf6knnq0pacre4wx926l8"
+    },
     "validator/declare_candidate": {
         "commission": "100000000",
         "validator_addr": "dxvaloper1lx4lvt8sjuxj8vw5dcf6knnq0pacr",

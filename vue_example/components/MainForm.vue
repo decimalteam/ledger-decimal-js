@@ -149,7 +149,6 @@ export default {
       this.wallet = await this.decimalNanoApp.getAddressAndPubKey(this.path, "dx");
     },
     async txTransfer() {
-      console.log(this.unsignedTxStringify);
       const unsignTx = await this.decimal.prepareTx(this.activeTxType, JSON.parse(this.unsignedTxStringify));
       const publicKey = (await this.decimalNanoApp.publicKey(this.path)).compressed_pk;
 
@@ -162,12 +161,7 @@ export default {
       };
 
       const message = JSON.stringify(createSignMsg(unsignTx, await this.getChainInfo()));
-
-      console.log(message);
-
       const signature = await this.decimalNanoApp.sign(this.path, message);
-
-      console.log(this.getChainInfo());
 
       const tx = JSON.parse(message);
       tx.msg = tx.msgs;
@@ -221,7 +215,7 @@ export default {
 .form-editor > textarea {
   background-color: #2d2f33;
   color: hsla(0, 0%, 100%, 0.6);
-  width: 100%;
+  width: 95%;
   resize: none;
   height: 30vh;
   padding: 20px;
@@ -233,8 +227,12 @@ export default {
   text-align: right;
 }
 
+.form-buttons-row {
+  flex-wrap: wrap;
+}
+
 .form-buttons-row > button {
-  margin: 10px 20px;
+  margin: 10px;
 }
 
 .form-buttons-inline {
