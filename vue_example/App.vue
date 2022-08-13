@@ -1,29 +1,59 @@
 <template>
-  <div id="app">
-    <img alt="Zondax logo" src="./assets/logo.png" width="300" />
-    <h1>Cosmos integration example</h1>
-    <LedgerExample msg="Minimal integration example" />
+  <div id="app" class="wrapper">
+    <div class="content">
+      <div class="content__logo">
+        <img alt="Decimal logo" src="./assets/decimal-logo.svg" />
+      </div>
+      <div class="content__data">
+        <MainForm />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import LedgerExample from "./components/LedgerExample.vue";
+import MainForm from "./components/MainForm";
 
 export default {
   name: "App",
   components: {
-    LedgerExample,
-  },
+    MainForm
+  }
 };
 </script>
 
 <style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
+body {
+  background-color: #212429;
+}
+
+.wrapper {
+  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin: 0 auto;
+  padding: 10px;
+  width: 60%;
+}
+
+.content {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.content__logo {
+  text-align: center;
+  padding: 15px 0;
+}
+
+.flex {
+  display: flex;
+}
+
+.space-between {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

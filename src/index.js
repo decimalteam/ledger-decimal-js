@@ -22,7 +22,7 @@ import { publicKeyv1, serializePathv1, signSendChunkv1 } from "./helperV1";
 import { publicKeyv2, serializePathv2, signSendChunkv2 } from "./helperV2";
 import { APP_KEY, CHUNK_SIZE, CLA, INS, errorCodeToString, getVersion, processErrorResponse } from "./common";
 
-export default class CosmosApp {
+export default class DecimalApp {
   constructor(transport, scrambleKey = APP_KEY) {
     if (!transport) {
       throw new Error("Transport has not been defined");
@@ -37,7 +37,7 @@ export default class CosmosApp {
   }
 
   static serializeHRP(hrp) {
-    if (hrp == null || hrp.length < 3 || hrp.length > 83) {
+    if (hrp == null || hrp.length < 2 || hrp.length > 83) {
       throw new Error("Invalid HRP");
     }
     const buf = Buffer.alloc(1 + hrp.length);
@@ -199,7 +199,7 @@ export default class CosmosApp {
       case 1:
         return publicKeyv1(this, serializedPath);
       case 2: {
-        const data = Buffer.concat([CosmosApp.serializeHRP("cosmos"), serializedPath]);
+        const data = Buffer.concat([DecimalApp.serializeHRP("dx"), serializedPath]);
         return publicKeyv2(this, data);
       }
       default:
@@ -212,7 +212,7 @@ export default class CosmosApp {
 
   async getAddressAndPubKey(path, hrp) {
     const serializedPath = await this.serializePath(path);
-    const data = Buffer.concat([CosmosApp.serializeHRP(hrp), serializedPath]);
+    const data = Buffer.concat([DecimalApp.serializeHRP(hrp), serializedPath]);
     return this.transport.send(CLA, INS.GET_ADDR_SECP256K1, 1, 0, data, [0x9000]).then(response => {
       const errorCodeData = response.slice(-2);
       const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
