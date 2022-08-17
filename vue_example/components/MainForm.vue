@@ -3,7 +3,7 @@
     <div class="form space-between">
       <div class="form-texts">
         <div class="form-texts__title">
-          Connent to ledger
+          Connect to ledger
         </div>
         <div class="form-texts__description">
           Connect your ledger for future use
@@ -15,11 +15,10 @@
         </button>
       </div>
     </div>
-
     <div class="form">
       <div class="form-texts">
         <div class="form-texts__title">
-          Select chain enviroment
+          Select chain environment
         </div>
         <div class="form-buttons-row space-between">
           <button
@@ -46,7 +45,6 @@
         </div>
       </div>
     </div>
-
     <div class="form">
       <div class="form-buttons-inline">
         <button
@@ -179,18 +177,17 @@ export default {
 
 <style>
 .forms {
-  padding: 10px;
-  float: left;
   width: 100%;
+  display: grid;
+  grid-gap: 24px;
 }
 
 .form {
-  margin: 30px;
-  padding: 24px;
   border: 1px solid rgba(224, 224, 255, 0.06);
   border-radius: 12px;
   width: 100%;
   text-align: left;
+  padding: 24px;
 }
 
 .form-texts {
@@ -232,12 +229,12 @@ export default {
 }
 
 .form-buttons-row > button {
-  margin: 10px;
 }
 
 .form-buttons-inline {
   display: flex;
   flex-wrap: wrap;
+  margin-bottom: 12px;
 }
 
 .btn {

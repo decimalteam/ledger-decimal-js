@@ -12,13 +12,13 @@
 </template>
 
 <script>
-import MainForm from "./components/MainForm";
+import MainForm from "./components/MainForm.vue";
 
 export default {
   name: "App",
   components: {
-    MainForm
-  }
+    MainForm,
+  },
 };
 </script>
 
@@ -33,14 +33,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin: 0 auto;
-  padding: 10px;
-  width: 60%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .content {
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 1170px;
+}
+
+.content__data {
+  display: grid;
 }
 
 .content__logo {
