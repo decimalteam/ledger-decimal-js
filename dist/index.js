@@ -365,7 +365,7 @@ var DecimalApp = /*#__PURE__*/function () {
               case 2:
                 serializedPath = _context7.sent;
                 data = Buffer.concat([DecimalApp.serializeHRP(hrp), serializedPath]);
-                return _context7.abrupt("return", this.transport.send(_common.CLA, _common.INS.GET_ADDR_SECP256K1, 1, 0, data, [0x9000]).then(function (response) {
+                return _context7.abrupt("return", this.transport.send(_common.CLA, _common.INS.GET_ADDR_SECP256K1, 0, 0, data, [0x9000]).then(function (response) {
                   var errorCodeData = response.slice(-2);
                   var returnCode = errorCodeData[0] * 256 + errorCodeData[1];
                   var compressedPk = Buffer.from(response.slice(0, 33));
@@ -393,30 +393,34 @@ var DecimalApp = /*#__PURE__*/function () {
       return getAddressAndPubKey;
     }()
   }, {
-    key: "signSendChunk",
+    key: "showAddressAndPubKey",
     value: function () {
-      var _signSendChunk = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8(chunkIdx, chunkNum, chunk) {
+      var _showAddressAndPubKey = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee8(path, hrp) {
+        var serializedPath, data;
         return _regenerator.default.wrap(function _callee8$(_context8) {
           while (1) {
             switch (_context8.prev = _context8.next) {
               case 0:
-                _context8.t0 = this.versionResponse.major;
-                _context8.next = _context8.t0 === 1 ? 3 : _context8.t0 === 2 ? 4 : 5;
-                break;
+                _context8.next = 2;
+                return this.serializePath(path);
 
-              case 3:
-                return _context8.abrupt("return", (0, _helperV.signSendChunkv1)(this, chunkIdx, chunkNum, chunk));
-
-              case 4:
-                return _context8.abrupt("return", (0, _helperV2.signSendChunkv2)(this, chunkIdx, chunkNum, chunk));
+              case 2:
+                serializedPath = _context8.sent;
+                data = Buffer.concat([DecimalApp.serializeHRP(hrp), serializedPath]);
+                return _context8.abrupt("return", this.transport.send(_common.CLA, _common.INS.GET_ADDR_SECP256K1, 1, 0, data, [0x9000]).then(function (response) {
+                  var errorCodeData = response.slice(-2);
+                  var returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+                  var compressedPk = Buffer.from(response.slice(0, 33));
+                  var bech32Address = Buffer.from(response.slice(33, -2)).toString();
+                  return {
+                    bech32_address: bech32Address,
+                    compressed_pk: compressedPk,
+                    return_code: returnCode,
+                    error_message: (0, _common.errorCodeToString)(returnCode)
+                  };
+                }, _common.processErrorResponse));
 
               case 5:
-                return _context8.abrupt("return", {
-                  return_code: 0x6400,
-                  error_message: "App Version is not supported"
-                });
-
-              case 6:
               case "end":
                 return _context8.stop();
             }
@@ -424,7 +428,45 @@ var DecimalApp = /*#__PURE__*/function () {
         }, _callee8, this);
       }));
 
-      function signSendChunk(_x7, _x8, _x9) {
+      function showAddressAndPubKey(_x7, _x8) {
+        return _showAddressAndPubKey.apply(this, arguments);
+      }
+
+      return showAddressAndPubKey;
+    }()
+  }, {
+    key: "signSendChunk",
+    value: function () {
+      var _signSendChunk = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9(chunkIdx, chunkNum, chunk) {
+        return _regenerator.default.wrap(function _callee9$(_context9) {
+          while (1) {
+            switch (_context9.prev = _context9.next) {
+              case 0:
+                _context9.t0 = this.versionResponse.major;
+                _context9.next = _context9.t0 === 1 ? 3 : _context9.t0 === 2 ? 4 : 5;
+                break;
+
+              case 3:
+                return _context9.abrupt("return", (0, _helperV.signSendChunkv1)(this, chunkIdx, chunkNum, chunk));
+
+              case 4:
+                return _context9.abrupt("return", (0, _helperV2.signSendChunkv2)(this, chunkIdx, chunkNum, chunk));
+
+              case 5:
+                return _context9.abrupt("return", {
+                  return_code: 0x6400,
+                  error_message: "App Version is not supported"
+                });
+
+              case 6:
+              case "end":
+                return _context9.stop();
+            }
+          }
+        }, _callee9, this);
+      }));
+
+      function signSendChunk(_x9, _x10, _x11) {
         return _signSendChunk.apply(this, arguments);
       }
 
@@ -433,25 +475,25 @@ var DecimalApp = /*#__PURE__*/function () {
   }, {
     key: "sign",
     value: function () {
-      var _sign = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee10(path, message) {
+      var _sign = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee11(path, message) {
         var _this = this;
 
         var chunks;
-        return _regenerator.default.wrap(function _callee10$(_context10) {
+        return _regenerator.default.wrap(function _callee11$(_context11) {
           while (1) {
-            switch (_context10.prev = _context10.next) {
+            switch (_context11.prev = _context11.next) {
               case 0:
-                _context10.next = 2;
+                _context11.next = 2;
                 return this.signGetChunks(path, message);
 
               case 2:
-                chunks = _context10.sent;
-                return _context10.abrupt("return", this.signSendChunk(1, chunks.length, chunks[0], [0x9000]).then( /*#__PURE__*/function () {
-                  var _ref = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee9(response) {
+                chunks = _context11.sent;
+                return _context11.abrupt("return", this.signSendChunk(1, chunks.length, chunks[0], [0x9000]).then( /*#__PURE__*/function () {
+                  var _ref = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee10(response) {
                     var result, i;
-                    return _regenerator.default.wrap(function _callee9$(_context9) {
+                    return _regenerator.default.wrap(function _callee10$(_context10) {
                       while (1) {
-                        switch (_context9.prev = _context9.next) {
+                        switch (_context10.prev = _context10.next) {
                           case 0:
                             result = {
                               return_code: response.return_code,
@@ -462,30 +504,30 @@ var DecimalApp = /*#__PURE__*/function () {
 
                           case 2:
                             if (!(i < chunks.length)) {
-                              _context9.next = 11;
+                              _context10.next = 11;
                               break;
                             }
 
-                            _context9.next = 5;
+                            _context10.next = 5;
                             return _this.signSendChunk(1 + i, chunks.length, chunks[i]);
 
                           case 5:
-                            result = _context9.sent;
+                            result = _context10.sent;
 
                             if (!(result.return_code !== 0x9000)) {
-                              _context9.next = 8;
+                              _context10.next = 8;
                               break;
                             }
 
-                            return _context9.abrupt("break", 11);
+                            return _context10.abrupt("break", 11);
 
                           case 8:
                             i += 1;
-                            _context9.next = 2;
+                            _context10.next = 2;
                             break;
 
                           case 11:
-                            return _context9.abrupt("return", {
+                            return _context10.abrupt("return", {
                               return_code: result.return_code,
                               error_message: result.error_message,
                               // ///
@@ -494,26 +536,26 @@ var DecimalApp = /*#__PURE__*/function () {
 
                           case 12:
                           case "end":
-                            return _context9.stop();
+                            return _context10.stop();
                         }
                       }
-                    }, _callee9);
+                    }, _callee10);
                   }));
 
-                  return function (_x12) {
+                  return function (_x14) {
                     return _ref.apply(this, arguments);
                   };
                 }(), _common.processErrorResponse));
 
               case 4:
               case "end":
-                return _context10.stop();
+                return _context11.stop();
             }
           }
-        }, _callee10, this);
+        }, _callee11, this);
       }));
 
-      function sign(_x10, _x11) {
+      function sign(_x12, _x13) {
         return _sign.apply(this, arguments);
       }
 
