@@ -1,7 +1,6 @@
 "use strict";
 
 var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefault");
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -9,11 +8,8 @@ exports.PAYLOAD_TYPE = exports.INS = exports.CLA = exports.CHUNK_SIZE = exports.
 exports.errorCodeToString = errorCodeToString;
 exports.getVersion = getVersion;
 exports.processErrorResponse = processErrorResponse;
-
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
-
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
-
 var CLA = 0x55;
 exports.CLA = CLA;
 var CHUNK_SIZE = 250;
@@ -58,57 +54,50 @@ var ERROR_DESCRIPTION = {
   0x6f00: "Unknown error",
   0x6f01: "Sign/verify error"
 };
-
 function errorCodeToString(statusCode) {
   if (statusCode in ERROR_DESCRIPTION) return ERROR_DESCRIPTION[statusCode];
   return "Unknown Status Code: ".concat(statusCode);
 }
-
 function processErrorResponse(response) {
+  console.log(response);
   return {
     return_code: response.statusCode,
     error_message: errorCodeToString(response.statusCode)
   };
 }
-
 function getVersion(_x) {
   return _getVersion.apply(this, arguments);
 }
-
 function _getVersion() {
   _getVersion = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(transport) {
     return _regenerator.default.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            return _context.abrupt("return", transport.send(CLA, INS.GET_VERSION, 0, 0).then(function (response) {
-              var errorCodeData = response.slice(-2);
-              var returnCode = errorCodeData[0] * 256 + errorCodeData[1];
-              var targetId = 0;
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          return _context.abrupt("return", transport.send(CLA, INS.GET_VERSION, 0, 0).then(function (response) {
+            var errorCodeData = response.slice(-2);
+            var returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+            var targetId = 0;
+            if (response.length >= 9) {
+              /* eslint-disable no-bitwise */
+              targetId = (response[5] << 24) + (response[6] << 16) + (response[7] << 8) + (response[8] << 0);
+              /* eslint-enable no-bitwise */
+            }
 
-              if (response.length >= 9) {
-                /* eslint-disable no-bitwise */
-                targetId = (response[5] << 24) + (response[6] << 16) + (response[7] << 8) + (response[8] << 0);
-                /* eslint-enable no-bitwise */
-              }
-
-              return {
-                return_code: returnCode,
-                error_message: errorCodeToString(returnCode),
-                // ///
-                test_mode: response[0] !== 0,
-                major: response[1],
-                minor: response[2],
-                patch: response[3],
-                device_locked: response[4] === 1,
-                target_id: targetId.toString(16)
-              };
-            }, processErrorResponse));
-
-          case 1:
-          case "end":
-            return _context.stop();
-        }
+            return {
+              return_code: returnCode,
+              error_message: errorCodeToString(returnCode),
+              // ///
+              test_mode: response[0] !== 0,
+              major: response[1],
+              minor: response[2],
+              patch: response[3],
+              device_locked: response[4] === 1,
+              target_id: targetId.toString(16)
+            };
+          }, processErrorResponse));
+        case 1:
+        case "end":
+          return _context.stop();
       }
     }, _callee);
   }));

@@ -15,12 +15,14 @@
  *  limitations under the License.
  ******************************************************************************* */
 
-import crypto from "crypto";
-import Ripemd160 from "ripemd160";
-import bech32 from "bech32";
+import * as bech32 from "bech32-buffer";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import sha3 from "js-sha3";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { publicKeyConvert } from "secp256k1";
 import { publicKeyv1, serializePathv1, signSendChunkv1 } from "./helperV1";
 import { publicKeyv2, serializePathv2, signSendChunkv2 } from "./helperV2";
-import { APP_KEY, CHUNK_SIZE, CLA, INS, errorCodeToString, getVersion, processErrorResponse } from "./common";
+import { APP_KEY, CHUNK_SIZE, CLA, errorCodeToString, getVersion, INS, processErrorResponse } from "./common";
 
 export default class DecimalApp {
   constructor(transport, scrambleKey = APP_KEY) {
@@ -50,12 +52,23 @@ export default class DecimalApp {
     if (pk.length !== 33) {
       throw new Error("expected compressed public key [31 bytes]");
     }
-    const hashSha256 = crypto
-      .createHash("sha256")
-      .update(pk)
-      .digest();
-    const hashRip = new Ripemd160().update(hashSha256).digest();
-    return bech32.encode(hrp, bech32.toWords(hashRip));
+    const decompressedPublicKey = publicKeyConvert(pk, false);
+
+    const slicedDecompressedPublicKey = decompressedPublicKey.slice(1);
+
+    const hexedDecompressedPublicKey = sha3.keccak256(slicedDecompressedPublicKey);
+
+    const evmAccountAddress = `0x${hexedDecompressedPublicKey.substring(
+      hexedDecompressedPublicKey.length - 40,
+      hexedDecompressedPublicKey.length,
+    )}`;
+    console.log(evmAccountAddress);
+    const formattedEvmAccountAddress = evmAccountAddress.startsWith("0x")
+      ? evmAccountAddress.slice(2)
+      : evmAccountAddress;
+
+    const bufferedEvmAccountAddress = Buffer.from(formattedEvmAccountAddress, "hex");
+    return bech32.encode(hrp, bufferedEvmAccountAddress);
   }
 
   async serializePath(path) {

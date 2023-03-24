@@ -46,6 +46,7 @@ export function errorCodeToString(statusCode) {
 }
 
 export function processErrorResponse(response) {
+  console.log(response);
   return {
     return_code: response.statusCode,
     error_message: errorCodeToString(response.statusCode),
