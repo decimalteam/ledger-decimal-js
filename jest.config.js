@@ -6,7 +6,7 @@ module.exports = {
 
   moduleNameMapper: {
     "^jest$": "<rootDir>/tests/jest.js",
-    "^index.js$": "<rootDir>/src/index.js",
+    "^index.js$": "<rootDir>/src/index.js"
   },
 
   // Automatically clear mock calls and instances between every test
@@ -27,6 +27,6 @@ module.exports = {
   testMatch: [
     "**/__tests__/**/*.[jt]s?(x)",
     "**/?(*.)+(spec|test).[tj]s?(x)",
-    "**/?(*.)+(ispec|test).[tj]s?(x)",
-  ],
+    "**/?(*.)+(ispec|test).[tj]s?(x)"
+  ]
 };

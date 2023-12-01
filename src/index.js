@@ -15,14 +15,16 @@
  *  limitations under the License.
  ******************************************************************************* */
 
-import crypto from "crypto";
-import Ripemd160 from "ripemd160";
-import bech32 from "bech32";
+import * as bech32 from "bech32-buffer";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import sha3 from "js-sha3";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { publicKeyConvert } from "secp256k1";
 import { publicKeyv1, serializePathv1, signSendChunkv1 } from "./helperV1";
 import { publicKeyv2, serializePathv2, signSendChunkv2 } from "./helperV2";
-import { APP_KEY, CHUNK_SIZE, CLA, INS, errorCodeToString, getVersion, processErrorResponse } from "./common";
+import { APP_KEY, CHUNK_SIZE, CLA, errorCodeToString, getVersion, INS, processErrorResponse } from "./common";
 
-export default class CosmosApp {
+export default class DecimalApp {
   constructor(transport, scrambleKey = APP_KEY) {
     if (!transport) {
       throw new Error("Transport has not been defined");
@@ -37,7 +39,7 @@ export default class CosmosApp {
   }
 
   static serializeHRP(hrp) {
-    if (hrp == null || hrp.length < 3 || hrp.length > 83) {
+    if (hrp == null || hrp.length < 2 || hrp.length > 83) {
       throw new Error("Invalid HRP");
     }
     const buf = Buffer.alloc(1 + hrp.length);
@@ -50,12 +52,23 @@ export default class CosmosApp {
     if (pk.length !== 33) {
       throw new Error("expected compressed public key [31 bytes]");
     }
-    const hashSha256 = crypto
-      .createHash("sha256")
-      .update(pk)
-      .digest();
-    const hashRip = new Ripemd160().update(hashSha256).digest();
-    return bech32.encode(hrp, bech32.toWords(hashRip));
+    const decompressedPublicKey = publicKeyConvert(pk, false);
+
+    const slicedDecompressedPublicKey = decompressedPublicKey.slice(1);
+
+    const hexedDecompressedPublicKey = sha3.keccak256(slicedDecompressedPublicKey);
+
+    const evmAccountAddress = `0x${hexedDecompressedPublicKey.substring(
+      hexedDecompressedPublicKey.length - 40,
+      hexedDecompressedPublicKey.length,
+    )}`;
+    console.log(evmAccountAddress);
+    const formattedEvmAccountAddress = evmAccountAddress.startsWith("0x")
+      ? evmAccountAddress.slice(2)
+      : evmAccountAddress;
+
+    const bufferedEvmAccountAddress = Buffer.from(formattedEvmAccountAddress, "hex");
+    return bech32.encode(hrp, bufferedEvmAccountAddress);
   }
 
   async serializePath(path) {
@@ -199,7 +212,7 @@ export default class CosmosApp {
       case 1:
         return publicKeyv1(this, serializedPath);
       case 2: {
-        const data = Buffer.concat([CosmosApp.serializeHRP("cosmos"), serializedPath]);
+        const data = Buffer.concat([DecimalApp.serializeHRP("dx"), serializedPath]);
         return publicKeyv2(this, data);
       }
       default:
@@ -212,7 +225,26 @@ export default class CosmosApp {
 
   async getAddressAndPubKey(path, hrp) {
     const serializedPath = await this.serializePath(path);
-    const data = Buffer.concat([CosmosApp.serializeHRP(hrp), serializedPath]);
+    const data = Buffer.concat([DecimalApp.serializeHRP(hrp), serializedPath]);
+    return this.transport.send(CLA, INS.GET_ADDR_SECP256K1, 0, 0, data, [0x9000]).then(response => {
+      const errorCodeData = response.slice(-2);
+      const returnCode = errorCodeData[0] * 256 + errorCodeData[1];
+
+      const compressedPk = Buffer.from(response.slice(0, 33));
+      const bech32Address = Buffer.from(response.slice(33, -2)).toString();
+
+      return {
+        bech32_address: bech32Address,
+        compressed_pk: compressedPk,
+        return_code: returnCode,
+        error_message: errorCodeToString(returnCode),
+      };
+    }, processErrorResponse);
+  }
+
+  async showAddressAndPubKey(path, hrp) {
+    const serializedPath = await this.serializePath(path);
+    const data = Buffer.concat([DecimalApp.serializeHRP(hrp), serializedPath]);
     return this.transport.send(CLA, INS.GET_ADDR_SECP256K1, 1, 0, data, [0x9000]).then(response => {
       const errorCodeData = response.slice(-2);
       const returnCode = errorCodeData[0] * 256 + errorCodeData[1];

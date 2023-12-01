@@ -1,0 +1,95 @@
+{
+    "coin/send_coin": {
+        "coin": {
+                "amount": "1000000000000000000",
+                "denom": "del"
+            },
+            "receiver": "dx1fjfxrtflz6cqa82520awnytkrr43tlnmcc5357",
+            "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w"
+        },
+    "coin/multi_send_coin": {
+        "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w",
+        "sends": [
+            {   
+                "coin": {
+                    "amount": "2000000000000000000",
+                    "denom": "del"
+                },
+                "receiver": "dx14kskueht0ul2qme5qmwjvlmjr9thd0x3x9ffrw"
+            },
+            {   
+                "coin": {
+                    "amount": "1000000000000000000",
+                    "denom": "del"
+                },
+                "receiver": "dx1fjfxrtflz6cqa82520awnytkrr43tlnmcc5357"
+            }
+        ]
+    },
+
+    "coin/create_coin":  {
+        "title": "test coin",
+        "symbol": "TCOIN",
+        "constant_reserve_ratio": "900000",
+        "initial_volume": "1000",
+        "initial_reserve": "900000",
+        "identity": "1000",
+        "limit_volume": "100000",
+        "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w"
+    },
+    "coin/update_coin": {
+        "symbol": "TCOIN",
+        "identity": "5000",
+        "limit_volume": "500000",
+        "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w"
+    },
+    "coin/sell_all_coin": {
+        "min_coin_to_buy": {
+          "amount": "1000000000000000000",
+          "denom": "del"
+        },
+        "coin_to_sell": {
+          "amount": "1000000000000000000",
+          "denom": "del"
+        },
+        "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w"
+    },
+    "coin/buy_coin":  {
+        "coin_to_buy": {
+          "amount": "1000000000000000000",
+          "denom": "del"
+        },
+        "max_coin_to_sell": {
+          "amount": "1000000000000000000",
+          "denom": "del"
+        },
+        "sender": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w"
+    },
+    "validator/delegate": {
+        "amount": {
+          "amount": "1000000000000000000000000",
+          "denom": "del"
+        },
+        "delegator_address": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w",
+        "validator_address": "dxvaloper1lx4lvt8sjuxj8vw5dcf6knnq0pacre4wx926l8"
+    },
+    "validator/declare_candidate": {
+        "commission": "100000000",
+        "validator_addr": "dxvaloper1lx4lvt8sjuxj8vw5dcf6knnq0pacr",
+        "reward_addr": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w",
+        "pub_key": {
+          "pub_key": "pubKey",
+          "signature": "signature"
+        },
+        "stake": {
+          "amount": "100000000000000000000",
+          "denom": "del"
+        },
+        "description": "desc"
+    },
+    "validator/edit_candidate": {
+        "validator_addr": "dxvaloper1lx4lvt8sjuxj8vw5dcf6knnq0pacr",
+        "reward_addr": "dx1ndgvlye77dmuct2ncr4m8ghmfkwp7p8semks5w",
+        "description": "desc change"
+    }
+}

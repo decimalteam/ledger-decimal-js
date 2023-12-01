@@ -1,4 +1,4 @@
-import CosmosApp from "index.js";
+import DecimalApp from "index.js";
 import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import { expect, test } from "jest";
 import secp256k1 from "secp256k1/elliptic";
@@ -7,7 +7,7 @@ import crypto from "crypto";
 test("get version", async () => {
   const transport = await TransportNodeHid.create(1000);
 
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
   const resp = await app.getVersion();
   console.log(resp);
 
@@ -22,7 +22,7 @@ test("get version", async () => {
 
 test("publicKey", async () => {
   const transport = await TransportNodeHid.create(1000);
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
 
   // Derivation path. First 3 items are automatically hardened!
   const path = [44, 118, 0, 0, 0];
@@ -42,7 +42,7 @@ test("getAddressAndPubKey", async () => {
   jest.setTimeout(60000);
 
   const transport = await TransportNodeHid.create(1000);
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
 
   // Derivation path. First 3 items are automatically hardened!
   const path = [44, 118, 5, 0, 3];
@@ -62,7 +62,7 @@ test("getAddressAndPubKey", async () => {
 
 test("appInfo", async () => {
   const transport = await TransportNodeHid.create(1000);
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
 
   const resp = await app.appInfo();
 
@@ -83,7 +83,7 @@ test("appInfo", async () => {
 
 test("deviceInfo", async () => {
   const transport = await TransportNodeHid.create(1000);
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
 
   const resp = await app.deviceInfo();
 
@@ -102,7 +102,7 @@ test("sign_and_verify", async () => {
   jest.setTimeout(60000);
 
   const transport = await TransportNodeHid.create(1000);
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
 
   // Derivation path. First 3 items are automatically hardened!
   const path = [44, 118, 0, 0, 0];
@@ -133,7 +133,7 @@ test("sign_empty_memo", async () => {
   jest.setTimeout(60000);
 
   const transport = await TransportNodeHid.create(1000);
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
 
   // Derivation path. First 3 items are automatically hardened!
   const path = [44, 118, 0, 0, 0];
@@ -164,7 +164,7 @@ test("sign_big_tx", async () => {
   jest.setTimeout(60000);
 
   const transport = await TransportNodeHid.create(1000);
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
 
   const path = [44, 118, 0, 0, 0]; // Derivation path. First 3 items are automatically hardened!
   const message =
@@ -233,7 +233,7 @@ test("sign_invalid", async () => {
   jest.setTimeout(60000);
 
   const transport = await TransportNodeHid.create(1000);
-  const app = new CosmosApp(transport);
+  const app = new DecimalApp(transport);
 
   const path = [44, 118, 0, 0, 0]; // Derivation path. First 3 items are automatically hardened!
   const invalidMessage =
